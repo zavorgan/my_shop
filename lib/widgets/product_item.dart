@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/screens/product_detail_screen.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/product.dart';
+import '../screens/product_detail_screen.dart';
 
 class ProductItem extends StatelessWidget {
   // const ProductItem({Key key}) : super(key: key);
-  final String id;
-  final String title;
-  final String imageUrl;
+  // final String id;
+  // final String title;
+  // final String imageUrl;
 
-  const ProductItem(this.id, this.title, this.imageUrl);
+  // const ProductItem(this.id, this.title, this.imageUrl);
 
   @override
   Widget build(BuildContext context) {
+    final product = Provider.of<Product>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: GridTile(
@@ -19,23 +23,34 @@ class ProductItem extends StatelessWidget {
             Navigator.of(context).pushNamed(
               ProductDetailScreen.routeName,
               //отправляем индетификатор  товара при нажатии
-              arguments: id,
+              arguments: product.id,
             );
           },
           child: Image.network(
-            imageUrl,
+            product.imageUrl,
+
             fit: BoxFit.cover,
+
             // color: Colors.white,
           ),
         ),
         footer: GridTileBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
-          leading: IconButton(
-            icon: Icon(Icons.favorite),
-            onPressed: () {},
+          leading: Consumer<Product>(
+            builder: (context, product, child) => IconButton(
+              icon: Icon(
+                product.isFavorite ? Icons.favorite : Icons.favorite_border,
+              ),
+              //переключатель статуса избранное
+              //вызывает функцию из product.dart
+              //она меняет ее состояние на противоположенное
+              onPressed: () {
+                product.toggleFavoriteStatus();
+              },
+            ),
           ),
           title: Text(
-            title,
+            product.title,
             textAlign: TextAlign.center,
             // style: TextDecoration(),
           ),
